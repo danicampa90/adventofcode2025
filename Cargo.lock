@@ -21,6 +21,17 @@ name = "day03"
 version = "0.1.0"
 
 [[package]]
+name = "day04"
+version = "0.1.0"
+dependencies = [
+ "libutils",
+]
+
+[[package]]
+name = "libutils"
+version = "0.1.0"
+
+[[package]]
 name = "memchr"
 version = "2.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
