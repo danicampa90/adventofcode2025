@@ -1,4 +1,4 @@
-use std::collections::{HashMap, LinkedList, VecDeque};
+use std::collections::VecDeque;
 
 fn main() {
     let input = std::fs::read_to_string("input2.txt").unwrap();

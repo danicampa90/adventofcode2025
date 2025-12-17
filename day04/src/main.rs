@@ -1,4 +1,4 @@
-use libutils::map2d::{Map2D, map_from_lines};
+use libutils::map2d::map_from_lines;
 
 fn main() {
     part1();
