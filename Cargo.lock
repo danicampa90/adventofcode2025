@@ -28,6 +28,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "day05"
+version = "0.1.0"
+dependencies = [
+ "nom",
+]
+
+[[package]]
 name = "libutils"
 version = "0.1.0"
 
