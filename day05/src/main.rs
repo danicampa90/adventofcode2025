@@ -40,7 +40,7 @@ fn main() {
     let mut count = 0;
     let mut current_idx = 0;
     while let Some(current_range) = ranges.get(current_idx) {
-        let mut current_start = current_range.start;
+        let current_start = current_range.start;
         let mut current_end = current_range.end;
         // continue consuming overlapping ranges, updading the end.
         // the start is always the lowes because the ranges array was sorted beforehand.

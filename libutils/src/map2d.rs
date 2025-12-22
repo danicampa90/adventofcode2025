@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 #[derive(Clone)]
 pub struct Map2D<T>
 where
@@ -110,6 +112,11 @@ where
         for (i, item) in row.into_iter().enumerate() {
             self.set_value(i as i32, row_index as i32, item);
         }
+    }
+    pub fn get_row(&self, row_index: usize) -> &[T] {
+        let start_idx = row_index * self.size_x;
+        let end_idx = (row_index + 1) * self.size_x;
+        &self.data[start_idx..end_idx]
     }
 
     pub fn fold<F>(&self, initial: F, fold_func: fn(F, &T, i32, i32) -> F) -> F {
@@ -247,6 +254,72 @@ where
             println!()
         }
     }
+
+    pub fn transposed(&self) -> Self {
+        let mut new_data = vec![];
+        let new_size_x = self.size_y();
+        for x in 0..self.size_x() {
+            for y in 0..self.size_y() {
+                new_data.push(self.get_value_usize(x, y));
+            }
+        }
+        Self {
+            data: new_data,
+            default: self.default,
+            size_x: new_size_x,
+        }
+    }
+    pub fn iter_rows<'a>(&'a self) -> Map2DColumnIterator<'a, T> {
+        Map2DColumnIterator {
+            map2d: self,
+            row_number: 0,
+        }
+    }
+
+    pub fn rotateccw(&self) -> Self {
+        let mut new_data = vec![];
+        let new_size_x = self.size_y();
+        for x in (0..self.size_x()).rev() {
+            for y in 0..self.size_y() {
+                new_data.push(self.get_value_usize(x, y));
+            }
+        }
+        Self {
+            data: new_data,
+            default: self.default,
+            size_x: new_size_x,
+        }
+    }
+}
+
+pub struct Map2DColumnIterator<'a, T: Copy> {
+    map2d: &'a Map2D<T>,
+    row_number: usize,
+}
+impl<'a, T: Copy> Iterator for Map2DColumnIterator<'a, T> {
+    type Item = &'a [T];
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.row_number >= self.map2d.size_y() {
+            return None;
+        } else {
+            self.row_number += 1;
+            return Some(self.map2d.get_row(self.row_number - 1));
+        }
+    }
+}
+
+impl<T> Debug for Map2D<T>
+where
+    T: Copy + Debug,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Map2D")
+            .field("data", &self.data)
+            .field("default", &self.default)
+            .field("size_x", &self.size_x)
+            .finish()
+    }
 }
 
 #[cfg(test)]
@@ -310,5 +383,38 @@ mod tests {
         assert_eq!(-1, regions.get_value(2, 0));
         assert_eq!(-1, regions.get_value(0, 1));
         assert_eq!(-1, regions.get_value(1, 1));
+    }
+
+    #[test]
+    pub fn test_transpose() {
+        let mut map = Map2D::new(0, 2);
+        map.add_row(vec![1, 2]);
+        map.add_row(vec![3, 4]);
+        map.add_row(vec![5, 6]);
+
+        let transposed = map.transposed();
+        assert_eq!(transposed.size_x(), 3);
+        assert_eq!(transposed.size_y(), 2);
+
+        let mut row_iter = transposed.iter_rows();
+        assert_eq!(row_iter.next(), Some(&[1, 3, 5] as &[i32]));
+        assert_eq!(row_iter.next(), Some(&[2, 4, 6] as &[i32]));
+        assert_eq!(row_iter.next(), None);
+    }
+    #[test]
+    pub fn test_rotate() {
+        let mut map = Map2D::new(0, 2);
+        map.add_row(vec![1, 2]);
+        map.add_row(vec![3, 4]);
+        map.add_row(vec![5, 6]);
+
+        let rotated = map.rotateccw();
+        assert_eq!(rotated.size_x(), 3);
+        assert_eq!(rotated.size_y(), 2);
+
+        let mut row_iter = rotated.iter_rows();
+        assert_eq!(row_iter.next(), Some(&[2, 4, 6] as &[i32]));
+        assert_eq!(row_iter.next(), Some(&[1, 3, 5] as &[i32]));
+        assert_eq!(row_iter.next(), None);
     }
 }
