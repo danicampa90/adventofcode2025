@@ -4,3 +4,5 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+libutils = { version = "0.1.0", path = "../libutils" }
+nom = "8.0.0"

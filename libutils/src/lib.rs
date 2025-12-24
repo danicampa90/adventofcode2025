@@ -6,6 +6,7 @@ use std::io::BufReader;
 use std::io::Read;
 use std::path::Path;
 
+pub mod connected_graph;
 pub mod map2d;
 pub mod memoizer;
 pub mod peekable_string;
